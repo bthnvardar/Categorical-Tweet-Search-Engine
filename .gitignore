@@ -33,7 +33,7 @@ include/
 index/
 pylucene-9.1.0/
 signalDataset/
-pyenv.cfg
+pyvenv.cfg
 
 
 # PyInstaller
