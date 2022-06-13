@@ -1,0 +1,25 @@
+<doctype html="">
+  <body style="background-color:rgba(143, 147, 156, 0.384);">
+    <title>Tweet Search Engine</title>
+<h2>Tweet Search Engine</h2>
+{% from "_formhelpers.html" import render_field %}
+<form method="post">
+  <dl>
+    <p>
+    {{ render_field(form.search) }}
+    {{ render_field(form.select) }}
+  </p></dl>
+  <p><input type="submit" value="Search"></p><br>
+
+    {{ form.csrf_token }}
+    {{ form.query }}
+    {{ form.submit }}
+    {% if results %}
+    {% for result in results %}
+        <p>{{ result }} </p>
+        <hr>
+    {% endfor %}
+    {% endif %}
+</form>
+</body>
+</doctype>
