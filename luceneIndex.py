@@ -3,6 +3,8 @@ import lucene
 import pandas as pd
 import string
 import re
+from twitter_scraper import scrape_func_df
+import time
 
 from java.nio.file import Paths
 from org.apache.lucene.analysis import CharArraySet
@@ -23,45 +25,32 @@ for stopword in stopWordList:
     stopWords.add(stopword)
 index_path = Paths.get("/home/batuhan/Desktop/InformationRetrievalPr/index")
 directory = NIOFSDirectory(index_path) # the 
-writerConfig = IndexWriterConfig(StandardAnalyzer(stopWords))
-writerConfig.setSimilarity(BM25Similarity())
-writer = IndexWriter(directory, writerConfig)
+
 
 t1 = FieldType()
 t1.setStored(True)
 t1.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
 
 
+#tweets = pd.read_csv("out.csv")
 
+#tweetFiltered = tweets[tweets.language == "en"]
 
-
-
-#docs = os.listdir("docs")
-#docCont = ""
-
-tweets = pd.read_csv("out.csv")
-
-tweetFiltered = tweets[tweets.language == "en"]
-
-
-#tweetArr = tweetArr.apply(lambda x: x.lower())
-"""
-cnt = 1
-for row in tweetArr:
-    with open('./docs/'+str(cnt), 'w') as f:
-        f.write(re.sub(r'\W+', ' ',row))
-    cnt+=1
-"""
-#for docit in docs:
-for index, row in tweetFiltered.iterrows():
-    doc = Document()
-    #with open("docs/"+docit,"r") as f:
-    #    docCont = f.read()
-    tweet = row["tweet"].lower()
-    tweet = re.sub(r'\W+', ' ',tweet)
-    doc.add(Field('id', row["id"], t1))
-    doc.add(Field('tweet',tweet, t1))
-    doc.add(Field('originalTweet',row["tweet"], t1))
-    writer.addDocument(doc)    
-
-writer.close()
+while True:
+    tweets = scrape_func_df("america")
+    tweetFiltered = tweets[tweets.language == "en"]
+    if True:
+        writerConfig = IndexWriterConfig(StandardAnalyzer(stopWords))
+        writerConfig.setSimilarity(BM25Similarity())
+        writerConfig.commitOnClose = True
+        writer = IndexWriter(directory, writerConfig)
+        for index, row in tweetFiltered.iterrows():
+            doc = Document()
+            tweet = row["tweet"].lower()
+            tweet = re.sub(r'\W+', ' ',tweet)
+            doc.add(Field('id', row["id"], t1))
+            doc.add(Field('tweet',tweet, t1))
+            doc.add(Field('originalTweet',row["tweet"], t1))
+            writer.addDocument(doc)    
+        writer.close()
+    time.sleep(3)

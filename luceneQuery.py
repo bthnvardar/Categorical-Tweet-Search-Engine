@@ -15,24 +15,24 @@ class lucene_query:
     def __init__(self):
         lucene.initVM()
         self.analyzer = StandardAnalyzer()
-        indexPath = File("index/").toPath()
-        indexDir = NIOFSDirectory.open(indexPath)
-        reader = DirectoryReader.open(indexDir)
-        self.searcher = IndexSearcher(reader)
+        self.indexPath = File("index/").toPath()
+        self.indexDir = NIOFSDirectory.open(self.indexPath)
+        self.reader = DirectoryReader.open(self.indexDir)
+        self.searcher = IndexSearcher(self.reader)
         self.searcher.setSimilarity(BM25Similarity())
 
     def search(self, search_str):
         lucene.getVMEnv().attachCurrentThread() 
+        reader = DirectoryReader.openIfChanged(self.reader)
+        if reader != None:
+            self.reader = reader
+            self.searcher = IndexSearcher(self.reader)
+            self.searcher.setSimilarity(BM25Similarity())
         query = QueryParser("tweet", self.analyzer).parse(search_str)
         MAX = 5000
         hits = self.searcher.search(query, MAX)
         results = []
         for hit in hits.scoreDocs:
             doc = self.searcher.doc(hit.doc)
-            """
-            print(doc.get("id"), hit)
-            print(doc.get("tweet").encode("utf-8"))
-            print("")
-            """
             results.append(doc.get("originalTweet"))#.encode("utf-8"))
         return results

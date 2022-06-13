@@ -27,6 +27,8 @@ def index():
 def search_results(search):
     results = []
     search_string = search.data['search']
+    if search_string == '':
+        return render_template('index.html', results=results, form = TweetSearchForm(request.form))
     results = tweet_searcher.search(search_string)
     results.insert(0, str(len(results)) + " tweets have been listed.")
     """
