@@ -23,7 +23,7 @@ stopWordList = ["a", "as", "able", "about", "above", "according", "accordingly",
 stopWords = CharArraySet(len(stopWordList),True)
 for stopword in stopWordList:
     stopWords.add(stopword)
-index_path = Paths.get("/home/batuhan/Desktop/InformationRetrievalPr/index")
+index_path = Paths.get("./index")
 directory = NIOFSDirectory(index_path) # the 
 
 
@@ -53,4 +53,4 @@ while True:
             doc.add(Field('originalTweet',row["tweet"], t1))
             writer.addDocument(doc)    
         writer.close()
-    time.sleep(3)
+    time.sleep(10)
