@@ -5,6 +5,8 @@ import string
 import re
 from twitter_scraper import scrape_func_df
 import time
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+import torch
 
 from java.nio.file import Paths
 from org.apache.lucene.analysis import CharArraySet
@@ -16,6 +18,13 @@ from org.apache.lucene.index import IndexWriter, IndexWriterConfig, IndexOptions
 from org.apache.lucene.store import NIOFSDirectory
 from org.apache.lucene.util import Version
 from org.apache.lucene.search.similarities import BM25Similarity
+
+
+
+tokenizer = AutoTokenizer.from_pretrained("./bert-mini-finetuned-age_news-classification")
+
+model = AutoModelForSequenceClassification.from_pretrained("./bert-mini-finetuned-age_news-classification")
+
 
 
 lucene.initVM()
@@ -47,10 +56,17 @@ while True:
         for index, row in tweetFiltered.iterrows():
             doc = Document()
             tweet = row["tweet"].lower()
+            tweet = re.sub(r'http\S+', '', tweet)
             tweet = re.sub(r'\W+', ' ',tweet)
             doc.add(Field('id', row["id"], t1))
             doc.add(Field('tweet',tweet, t1))
             doc.add(Field('originalTweet',row["tweet"], t1))
+
+            inputs = tokenizer(row["tweet"], return_tensors="pt")
+            outputs = model(**inputs)
+            tweet_category = torch.argmax(outputs.logits)
+
+            doc.add(Field('tweetCategory',tweet_category.item(), t1))
             writer.addDocument(doc)    
         writer.close()
     time.sleep(10)

@@ -1,5 +1,6 @@
 import sys
 import lucene
+from nltk.corpus import wordnet
 
 from java.io import File
 from org.apache.lucene.analysis.standard import StandardAnalyzer
@@ -21,18 +22,35 @@ class lucene_query:
         self.searcher = IndexSearcher(self.reader)
         self.searcher.setSimilarity(BM25Similarity())
 
-    def search(self, search_str):
+    def search(self, search_str, search_choice):
         lucene.getVMEnv().attachCurrentThread() 
         reader = DirectoryReader.openIfChanged(self.reader)
         if reader != None:
             self.reader = reader
             self.searcher = IndexSearcher(self.reader)
             self.searcher.setSimilarity(BM25Similarity())
+
+        if len(search_str.split(" ")) == 1:
+            syn = []
+            for synset in wordnet.synsets(search_str):
+                for lemma in synset.lemmas():
+                    syn.append(lemma.name())   
+            syn = set(syn)
+            if len(syn) > 1:
+                search_str = ""
+                for index,item in enumerate(syn):
+                    search_str = search_str + item.replace("_", " ")
+                    if index < (len(syn) - 1):
+                        search_str = search_str + " OR "
+
         query = QueryParser("tweet", self.analyzer).parse(search_str)
         MAX = 5000
         hits = self.searcher.search(query, MAX)
         results = []
         for hit in hits.scoreDocs:
             doc = self.searcher.doc(hit.doc)
-            results.append(doc.get("originalTweet"))#.encode("utf-8"))
+            if search_choice < 4 and int(doc.get("tweetCategory")) == search_choice:
+                results.append(doc.get("originalTweet"))
+            elif search_choice == 4:
+                results.append(doc.get("originalTweet"))
         return results
