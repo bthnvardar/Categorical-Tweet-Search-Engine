@@ -61,12 +61,17 @@ while True:
             doc.add(Field('id', row["id"], t1))
             doc.add(Field('tweet',tweet, t1))
             doc.add(Field('originalTweet',row["tweet"], t1))
-
             inputs = tokenizer(row["tweet"], return_tensors="pt")
             outputs = model(**inputs)
-            tweet_category = torch.argmax(outputs.logits)
 
-            doc.add(Field('tweetCategory',tweet_category.item(), t1))
+            if torch.max(outputs.logits) > 2.5:
+                tweet_category = torch.argmax(outputs.logits)
+                doc.add(Field('tweetCategory',tweet_category.item(), t1))
+            else:
+                doc.add(Field('tweetCategory',4, t1))
+
+            doc.add(Field('username',row["username"], t1))
+            doc.add(Field('date',row["date"], t1))
             writer.addDocument(doc)    
         writer.close()
     time.sleep(10)

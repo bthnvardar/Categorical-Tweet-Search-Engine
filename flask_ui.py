@@ -26,17 +26,31 @@ class TweetSearchForm(Form):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     search = TweetSearchForm(request.form)
-    if request.method == 'POST':
-        return search_results(search)
+    fuzzy_flag = False
+    try:
+        if "I'm feeling lucky" == request.form["qname"]:
+            fuzzy_flag = True
+        if request.method == 'POST':
+            return search_results(search,fuzzy_flag)
+    except:
+        pass
     return render_template('index.html', form=search)
 @app.route('/search')
-def search_results(search):
+def search_results(search, fuzzy_flag):
     results = []
+    ids = []
+    date = []
     search_string = search.data['search']
+    if fuzzy_flag:
+        search_string = search_string.strip()
+        search_string = ' '.join(search_string.split())
+        search_string = search_string.replace(" ", "~ ")
+        search_string = search_string + "~"
+
     search_choice = search.data["select"]
     if search_string == '':
         return render_template('index.html', results=results, form = TweetSearchForm(request.form))
-    results = tweet_searcher.search(search_string, class_dict[search_choice])
-    return render_template('index.html', results=results, form = TweetSearchForm(request.form))
+    results, ids, date = tweet_searcher.search(search_string, class_dict[search_choice])
+    return render_template('index.html', results=results, ids = ids, dates = date , form = TweetSearchForm(request.form))
 if __name__ == '__main__':
     app.run(debug= True)

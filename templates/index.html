@@ -1,4 +1,57 @@
 <doctype html="">
+  <head>
+    <style>
+    .flex-container {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      border: 1px solid silver;
+      -ms-box-orient: horizontal;
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -moz-flex;
+      display: -webkit-flex;
+      display: flex;
+    }
+    
+    .nowrap  { 
+      -webkit-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+    }
+    
+    .wrap    { 
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      flex-direction: column;
+    }  
+    .wrap li {
+      background: gold;
+    }
+    
+    .wrap-reverse         { 
+      -webkit-flex-wrap: wrap-reverse;
+      flex-wrap: wrap-reverse;
+    }  
+    .wrap-reverse li {
+      background: deepskyblue;
+    }
+    
+    .flex-item {
+      background: tomato;
+      padding: 5px;
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      
+      line-height: 100px;
+      color: white;
+      font-weight: bold;
+      font-size: 2em;
+      text-align: center;
+    }
+    </style>
+  </head>
   <body style="background-color:rgba(143, 147, 156, 0.384);">
     <title>Tweet Search Engine</title>
 <h2>Tweet Search Engine</h2>
@@ -6,20 +59,24 @@
 <form method="post">
   <dl>
     <p>
-    {{ render_field(form.search) }}
+    {{ render_field(form.search) }} <br>
     {{ render_field(form.select) }}
   </p></dl>
-  <p><input type="submit" value="Search"></p><br>
-
+  <p><input type="submit" value="Search" name="qname">&nbsp&nbsp&nbsp<input type="submit" value="I'm feeling lucky" name="qname"></p><br>
+</form>
     {{ form.csrf_token }}
     {{ form.query }}
     {{ form.submit }}
     {% if results %}
     {% for result in results %}
+    <div class="flex-container wrap">
+        {%set id = ids[loop.index - 1]%}
+        {%set date = dates[loop.index - 1]%}
+        <p>{{ id }}       &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp       {{ date }} </p>
         <p>{{ result }} </p>
         <hr>
+    </div>
     {% endfor %}
     {% endif %}
-</form>
 </body>
 </doctype>
