@@ -56,7 +56,7 @@ while True:
         writerConfig.commitOnClose = True
         writer = IndexWriter(directory, writerConfig)
         tweets = tweetFiltered["tweet"]
-        tweets = tweets.apply(lambda x: x.replace("@", ""))
+        tweets = tweets.apply(lambda x: " ".join(filter(lambda y:y[0]!='@', x.split())))
         for index, row in tweetFiltered.iterrows():
             doc = Document()
             tweet = row["tweet"].lower()
@@ -65,7 +65,7 @@ while True:
             doc.add(Field('id', row["id"], t1))
             doc.add(Field('tweet',tweet, t1))
             doc.add(Field('originalTweet',row["tweet"], t1))
-            inputs = tokenizer(row["tweet"], return_tensors="pt").to(device)
+            inputs = tokenizer(tweets[index], return_tensors="pt").to(device)
             outputs = model(**inputs)
             outputs = torch.nn.functional.softmax(outputs.logits)
             if torch.max(outputs) > 0.7:
