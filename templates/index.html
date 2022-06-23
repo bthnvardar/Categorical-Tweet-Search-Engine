@@ -68,6 +68,7 @@
     {{ form.query }}
     {{ form.submit }}
     {% if results %}
+    {{results|length}} tweets retrieved.
     {% for result in results %}
     <div class="flex-container wrap">
         {%set id = ids[loop.index - 1]%}

@@ -45,18 +45,18 @@ class lucene_query:
         
 
         query = QueryParser("tweet", self.analyzer).parse(search_str)
-        MAX = 5000
+        MAX = 500
         hits = self.searcher.search(query, MAX)
         results = []
         ids = []
         date = []
         for hit in hits.scoreDocs:
             doc = self.searcher.doc(hit.doc)
-            if search_choice < 4 and int(doc.get("tweetCategory")) == search_choice:
+            if search_choice < 5 and int(doc.get("tweetCategory")) == search_choice:
                 results.append(doc.get("originalTweet"))
                 ids.append(doc.get("username"))
                 date.append(doc.get("date"))
-            elif search_choice == 4:
+            elif search_choice == 5:
                 results.append(doc.get("originalTweet"))
                 ids.append(doc.get("username"))
                 date.append(doc.get("date"))

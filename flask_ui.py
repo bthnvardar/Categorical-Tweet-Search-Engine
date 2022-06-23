@@ -11,15 +11,16 @@ tweet_searcher = lucene_query()
 
 
 
-class_dict = {"World": 0, "Sports" : 1, "Business": 2, "Science" : 3, "All" : 4}
+class_dict = {"Business": 0, "Entertainment" : 1, "Politics": 2, "Sport" : 3, "Tech" : 4, "All" : 5}
 
 
 class TweetSearchForm(Form):
     choices = [('All', 'All'),
-               ('World', 'World'),
-               ('Sports', 'Sports'),
                ('Business', 'Business'),
-               ('Science', 'Science'),]
+               ('Entertainment', 'Entertainment'),
+               ('Politics', 'Politics'),
+               ('Sport', 'Sport'),
+               ('Tech', 'Tech'),]
     select = SelectField("Categories",choices=choices)
     search = StringField('')
 
