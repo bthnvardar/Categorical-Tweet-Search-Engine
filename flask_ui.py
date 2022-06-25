@@ -1,6 +1,6 @@
 from flask import Flask,flash, render_template, request, redirect
 from wtforms import Form, StringField, SelectField
-from luceneQuery import lucene_query
+from lucene_query import lucene_query
 
 
 

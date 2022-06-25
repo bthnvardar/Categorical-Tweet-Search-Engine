@@ -45,7 +45,7 @@ class lucene_query:
         
 
         query = QueryParser("tweet", self.analyzer).parse(search_str)
-        MAX = 500
+        MAX = 1500
         hits = self.searcher.search(query, MAX)
         results = []
         ids = []
